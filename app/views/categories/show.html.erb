@@ -1,0 +1,50 @@
+<!------------ Individual Category page for all users ------------>
+<!-- If an admin is logged in, display delete/cancel buttons with a warning -->
+<% if session[:admin_id] %>
+  <div class="border border-dark p-3 mb-5">
+    <!-- Category to delete -->
+    <h2>Category: <%= @category.name %></h2>
+    <!-- Warning -->
+    <h5>Are you sure you want to delete this category?</h5>
+    <p class="mb-3">All articles below will be assigned to "Unknown" category.
+      <br>This action cannot be undone.</p>
+    <!-- Buttons -->
+    <div class="d-flex justify-content-start">
+      <!-- button to go back to the previous page -->
+      <%= button_to "Cancel", list_categories_path, method: :get, class: "btn btn-success" %>
+      <!-- button to delete the category -->
+      <%= button_to "Delete", delete_category_path(:id => @category.id), method: :delete, class: "btn btn-danger ms-3" %>
+    </div>
+  </div>
+<% end %>
+<!-- Display the heading (category name) -->
+<h2><%= @category.name %></h2>
+<!-- If there are no articles in the @article array (within the category), display a message -->
+<% if @articles.blank? %>
+  <p>No articles found in this category.</p>
+  <!-- If there are no articles (within the category), display their title, date and part of the content -->
+<% else %>
+  <!-- Display the article list-->
+  <ul style="list-style: none; padding: 0; margin: 30px 0 0;" id="articles">
+    <!-- Loop through each article in the @articles array -->
+    <% @articles.each do |article| %>
+      <li>
+        <!-- horizontal line -->
+        <hr/>
+        <!-- Display the article title as a clickable link to the individual article page -->
+        <h5><%= link_to article.title, show_article_path(:id => article.id), style: "text-decoration: none;" %></h5>
+        <!-- Date the article was created in an appropriate format -->
+        <p><%= article.created_at.strftime("%B %d, %Y %H:%M") %></p>
+        <p>
+          <!-- First 200 words of the article's content -->
+          <%= truncate(article.content, length: 200) %>
+          <!-- "Read more" link to the individual article page -->
+          <%= link_to " Read more >>", show_article_path(:id => article.id), style: "text-decoration: none;" %>
+        </p>
+      </li>
+    <% end %>
+    <hr/>
+  </ul>
+<% end %>
+
+

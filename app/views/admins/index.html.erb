@@ -1,0 +1,50 @@
+<!------------ Admin Home page for admins ------------>
+<!-- If any updates to the articles, display a message to notify the admin-->
+<% if flash[:article_notice] %>
+  <p class="text-success fw-bold"><%= flash[:article_notice] %></p>
+<% end %>
+<!-- Display a welcome message with the username -->
+<h6>Welcome, <%= @admin.username %>!</h6>
+<div class="d-flex justify-content-between align-items-center">
+  <!-- Select the heading to display based on the show_hidden flag -->
+  <h2 class="mb-0"><%= @show_hidden ? "Hidden Articles" : "Visible Articles" %></h2>
+  <!-- New Article button linked to new article form -->
+  <%= link_to "Add New Article", new_article_path, type: "button", class: "btn btn-outline-primary" %>
+</div>
+
+<!--If there are no articles in the @article array , display a message -->
+<% if @articles.blank? %>
+  <p>No News found.</p>
+<!--If there are any articles, list their title, published date and part of the content -->
+<% else %>
+  <!-- Display the article list-->
+  <ul style="list-style: none; padding: 0; margin: 30px 0 0;" id="categories">
+    <!-- Loop through each article in the @articles array -->
+    <% @articles.each do |article| %>
+      <!-- horizontal line -->
+      <hr/>
+      <li class="mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <!-- Display the article title as a clickable link to the individual article page -->
+          <h5><%= link_to article.title, show_article_path(:id => article.id), style: "text-decoration: none;" %></h5>
+          <div class="btn-group btn-group-sm" role="group" aria-label="Edit Article">
+            <!-- Edit button linked to edit article form -->
+            <%= link_to "Edit", edit_article_path(:id => article.id), type: "button", class: "btn btn-primary" %>
+            <!-- Hide/Unhide button to perform either hide or unhide action depending on the is_hidden flag -->
+            <%= button_to article.is_hidden ? "Unhide" : "Hide", article.is_hidden ? hide_unhide_path(article.id) : hide_unhide_path(article.id), method: :patch, class: "btn btn-secondary btn-sm rounded-0" %>
+            <!-- Delete button linked to show delete view (individual article page) -->
+            <%= link_to "Delete", show_delete_path(:id => article.id), method: :get, class: "btn btn-danger" %>
+          </div>
+        </div>
+        <!-- Date the article was created in an appropriate format -->
+        <p><%= article.created_at.strftime("%B %d, %Y %H:%M") %></p>
+        <p class="mb-4">
+          <!-- First 200 words of the article's content -->
+          <%= truncate(article.content, length: 200) %>
+          <!-- "Read more" link to the individual article page -->
+          <%= link_to " Read more >>", show_article_path(:id => article.id), style: "text-decoration: none;" %>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

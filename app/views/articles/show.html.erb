@@ -1,0 +1,92 @@
+<!------------ Individual Article Page for all users ------------>
+<!-- If show_delete is true, display a warning message and delete/cancel buttons -->
+<% if @show_delete %>
+  <div class="border border-dark p-3 mb-5">
+    <!-- Warning -->
+    <h2>Article Title: <%= @article.title %></h2>
+    <h5>Are you sure you want to delete this article?</h5>
+    <p class="mb-3">This action cannot be undone.</p>
+    <!-- Buttons -->
+    <div class="d-flex justify-content-start">
+      <!-- button to go back to the previous page -->
+      <%= button_to "Cancel", index_admins_path, method: :get, class: "btn btn-success" %>
+      <!-- button to delete the category -->
+      <%= button_to "Delete", delete_article_path(:id => @article.id), method: :delete, class: "btn btn-danger ms-3" %>
+    </div>
+  </div>
+<% end %>
+
+<!-- Article Section -->
+<div>
+  <!-- If the article was just updated by admin, display a success/error message -->
+  <% if flash[:update_notice] %>
+    <p class="text-success fw-bold"><%= flash[:update_notice] %></p>
+  <% elsif flash[:update_alert] %>
+    <p class="text-danger fw-bold"><%= flash[:update_alert] %></p>
+  <% end %>
+  <!-- Display the article title -->
+  <h2 class="mb-3"><%= @article.title %></h2>
+  <p class="mb-3">
+    <!-- Category name -->
+    <strong>Category: </strong> <%= @article.category.name %><br/>
+    <!-- Source -->
+    <strong>Source: </strong> <%= @article.source %><br/>
+    <!-- Created date -->
+    <strong>Date:</strong> <%= @article.created_at.strftime(" %B %d, %Y %H:%M") %><br/>
+  </p>
+  <!-- Content -->
+  <p><%= @article.content %></p>
+</div>
+
+<!-- Horizontal line -->
+<hr/>
+
+<!-- Display all comments for the article -->
+<div class="mb-5">
+  <!-- If the comment was just created or deleted by admin, display a success/error message -->
+  <% if flash[:comment_notice] %>
+    <p class="text-success fw-bold"><%= flash[:comment_notice] %></p>
+  <% elsif flash[:comment_alert] %>
+    <p class="text-danger fw-bold"><%= flash[:comment_alert] %></p>
+  <% end %>
+  <!-- Comment Section -->
+  <h5 class="mb-3">Comments</h5>
+  <!-- Loop through each comment associated with the article and display the comment date and body -->
+  <% @article.comments.each do |comment| %>
+    <div class="d-flex justify-content-start">
+      <p class="d-flex align-items-center mb-2.5">
+        <!-- Created date -->
+        <strong class="me-3"><%= comment.created_at.strftime("%B %d, %Y %H:%M") %>:</strong>
+        <!-- Comment body -->
+        <%= comment.body %>
+      </p>
+      <!-- Delete button for comments and Simple alert to be displayed when the admin is trying to delete a comment-->
+      <% if session[:admin_id] %>
+        <div class="ms-3">
+          <!-- Alert -->
+          <a href="#" onclick="alert('Are you sure you want to delete the comment? Click [OK] to confirm:')">
+            <!-- button to delete the comment -->
+            <%= button_to "Delete", delete_comment_path(article_id: @article.id, id: comment.id), method: :delete, class: "btn btn-danger btn-sm ms-3" %>
+          </a>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<!-- Add Comments -->
+<!-- if show_delete is false, display the add comment section -->
+<% if !@show_delete %>
+  <div>
+    <h5 class="mb-3">Add a comment</h5>
+    <!-- Form for creating a new comment associated with the current article -->
+    <%= form_with model: [@article, @article.comments.build], class: "d-flex flex-column gap-3" do |f| %>
+      <div>
+        <!-- Comment field -->
+        <%= f.text_area :body, class: "form-control", rows: 4, placeholder: "Enter Comment", required: true %>
+      </div>
+      <!-- Submit button -->
+      <%= f.submit "Submit", class: "btn btn-primary align-self-start" %>
+    <% end %>
+  </div>
+<% end %>

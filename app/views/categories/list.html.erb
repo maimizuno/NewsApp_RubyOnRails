@@ -1,0 +1,50 @@
+<!------------ Categories page for all users ------------>
+<!-- If there are no categories in the @categories array, display a message -->
+<% if @categories.blank? %>
+  <p>No categories found.</p>
+<% else %>
+  <!-- If a category was just updated by admin, display a success/error message -->
+  <% if flash[:category_notice] && session[:admin_id] %>
+    <p class="text-success fw-bold"><%= flash[:category_notice] %></p>
+  <% elsif flash[:alert] %>
+    <p class="text-danger fw-bold"><%= flash[:alert] %></p>
+  <% end %>
+  <!-- Display the category list-->
+  <div class="d-flex justify-content-between align-items-center">
+    <!-- Select the appropriate heading by checking if an admin session is on -->
+    <h2><%= session[:admin_id] ? "Manage Categories" : "Categories" %></h2>
+    <!-- New Category button linked to new category form -->
+    <%= link_to "Add New Category", new_category_path, type: "button", class: "btn btn-outline-primary" %>
+  </div>
+  <!-- horizontal line -->
+  <hr/>
+  <!-- Display the category list-->
+  <ul style="list-style: none; padding: 0; margin: 0;" id="categories">
+    <!-- Loop through each category in the @categories array -->
+    <% @categories.each do |category| %>
+      <li class="mb-3">
+        <!-- If an admin is logged in, display the edit/delete form-->
+        <% if session[:admin_id] %>
+          <div class="d-flex align-items-center">
+            <!-- Category edit/delete form -->
+            <%= form_with(model: category, url: update_category_path(category), method: :patch, local: true, class: "d-flex align-items-center") do |f| %>
+              <div class="me-3 flex-grow-1">
+                <!-- Category name (editable) -->
+                <%= f.text_field :name, class: "form-control", required: true %>
+              </div>
+              <!-- Update button -->
+              <div class="me-3">
+                <%= f.submit "Update", class: "btn btn-primary" %>
+              </div>
+            <% end %>
+            <!-- Delete button linked to show delete view (individual article page) -->
+            <%= button_to "Delete", show_delete_category_path(category), method: :get, class: "btn btn-danger" %>
+          </div>
+        <!-- If an admin is not logged in, simply list categories -->
+        <% else %>
+          <h5><%= link_to category.name, show_category_path(category), style: "text-decoration: none;" %></h5>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

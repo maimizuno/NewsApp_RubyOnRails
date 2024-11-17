@@ -1,0 +1,40 @@
+<!------------ News Page for all users ------------>
+<!-- If there are no categories in the @categories array, display a message -->
+<% if @categories.blank? %>
+  <p>No News found.</p>
+<!-- If there are categories, display them and associated news -->
+<% else %>
+  <!-- Display the category name -->
+  <ul style="list-style: none; padding: 0; margin: 30px 0 0;" id="categories">
+    <!-- Loop through each category in the @categories array -->
+    <% @categories.each do |category| %>
+      <li class="mb-5">
+        <!-- Display the category name as a clickable link to the individual category page -->
+        <h2><%= link_to category.name, show_category_path(category.id), style: "text-decoration: none; color: black;" %></h2>
+        <!-- If there are no articles in the category, display a message -->
+        <% if category.articles.blank? %>
+          <!-- horizontal line -->
+          <hr/>
+          <!-- message -->
+          <p>No articles found in this category.</p>
+        <!-- If there are any articles in the category, display their title, date and part of the content -->
+        <% else %>
+          <!-- Loop through each article in the articles array within each category -->
+          <% category.articles.each do |article| %>
+            <hr/>
+            <!-- Display the article title as a clickable link to the individual article page -->
+            <h5><%= link_to article.title, show_article_path(:id => article.id), style: "text-decoration: none;" %></h5>
+            <!-- Date the article was created in an appropriate format -->
+            <p><%= article.created_at.strftime("%B %d, %Y %H:%M") %><br/></p>
+            <p class="mb-4">
+              <!-- First 200 words of the article's content -->
+              <%= truncate(article.content, length: 200) %>
+              <!-- "Read more" link to the individual article page -->
+              <%= link_to " Read more >>", show_article_path(:id => article.id), style: "text-decoration: none;" %>
+            </p>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

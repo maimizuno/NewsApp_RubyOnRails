@@ -1,0 +1,36 @@
+<!------------ Login page for admins ------------>
+<!-- if login fails, display an error message-->
+<% if flash[:alert] %>
+  <p class="text-danger fw-bold"><%= flash[:alert] %></p>
+<% end %>
+<!-- Page title -->
+<h2>Login</h2>
+<!-- horizontal line -->
+<hr/>
+<!-- Login form -->
+<%= form_with url: login_path, method: :post, class: "row g-3" do %>
+  <div class="col-md-6">
+    <!-- Username field -->
+    <div class="mb-3 row">
+      <div class="col-sm-10">
+        <%= label_tag :username, "Username", class: "form-label" %>
+        <%= text_field_tag :username, params[:username], class: "form-control", placeholder: "Enter email", required: true %>
+      </div>
+    </div>
+    <!-- Password field -->
+    <div class="mb-3 row">
+      <div class="col-sm-10">
+        <%= label_tag :password, "Password", class: "form-label" %>
+        <%= password_field_tag :password, params[:password], class: "form-control", placeholder: "Enter password", required: true %>
+      </div>
+    </div>
+    <!-- Submit button -->
+    <div class="col-sm-10">
+      <%= submit_tag "Login", class: "btn btn-primary" %>
+    </div>
+    <!-- Link to register page -->
+    <p class="mt-3">
+      <%= link_to "Don't have an account?", show_register_path, style: "text-decoration: none;" %>
+    </p>
+  </div>
+<% end %>

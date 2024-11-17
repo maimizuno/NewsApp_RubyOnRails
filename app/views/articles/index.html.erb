@@ -1,0 +1,32 @@
+<!------------ Home page for all users ------------>
+<% if params[:search] %>
+  <h2>Search Results based on "<%= params[:search] %>"</h2>
+<% end %>
+<!-- If there are no articles in the @articles array, display a message -->
+<% if @articles.blank? %>
+  <p>No articles found.</p>
+<!-- If there are articles, display the recent news -->
+<% else %>
+  <!-- if search was not performed, display the heading for the Home page (Recent news) -->
+  <h2><%= "Recent News" if params[:search].blank? %></h2>
+  <!-- Display the article list-->
+  <ul style="list-style: none; padding: 0; margin: 0;" id="articles">
+    <!-- Loop through each article in the @articles array -->
+    <% @articles.each do |article| %>
+      <li>
+        <!-- horizontal line -->
+        <hr/>
+        <!-- Display the article title as a clickable link to the individual article page -->
+        <h5><%= link_to article.title, show_article_path(:id => article.id), style: "text-decoration: none;" %></h5>
+        <!-- Date the article was created in an appropriate format -->
+        <p><%= article.created_at.strftime("%B %d, %Y %H:%M") %></p>
+        <p>
+          <!-- First 200 words of the article's content -->
+          <%= truncate(article.content, length: 200) %>
+          <!-- "Read more" link to the individual article page -->
+          <%= link_to " Read more >>", show_article_path(:id => article.id),style: "text-decoration: none;" %>
+        </p>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
